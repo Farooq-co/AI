@@ -8,3 +8,4 @@ class Todo(Base):
     title=Column(String(100),nullable=False)
     description=Column(String(255))
     completed=Column(Boolean,default=False)
+    credit_at=Column(DateTime,default=datetime.datetime.utcnow)
