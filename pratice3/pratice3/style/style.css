@@ -1,0 +1,11 @@
+button{
+background-color: brown;
+color: #fff;
+border: 2px solid black;
+border-radius: 6px;
+
+}
+button:hover{
+    background-color: burlywood;
+    transition: 1s;
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Document Metadata -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Trip Scout - Login to your account" />
+    <meta name="theme-color" content="#3b82f6" />
+    
+    <!-- Page Title -->
+    <title>Login - Trip Scout</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+
+<body class="login-page">
+    <!-- Background Slideshow -->
+    <div class="login-slideshow" id="loginSlideshow">
+        <div class="slide active" style="background-image: url('1.jpg');"></div>
+        <div class="slide" style="background-image: url('2.jpg');"></div>
+        <div class="slide" style="background-image: url('3.jpg');"></div>
+        <div class="slide" style="background-image: url('4.jpg');"></div>
+        <div class="slide" style="background-image: url('5.jpg');"></div>
+        <div class="slide" style="background-image: url('6.jpg');"></div>
+        <div class="slide" style="background-image: url('7.jpg');"></div>
+        <div class="slide" style="background-image: url('8.jpg');"></div>
+        <div class="slide" style="background-image: url('9.jpg');"></div>
+        <div class="slide" style="background-image: url('10.jpg');"></div>
+        <div class="slide" style="background-image: url('11.jpg');"></div>
+        <div class="slide" style="background-image: url('12.jpg');"></div>
+        <div class="slide" style="background-image: url('13.jpg');"></div>
+        <div class="slideshow-overlay"></div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <!-- Brand Section -->
+        <div class="login-brand">
+            <a href="index.html" class="brand-link">
+                <span class="brand-icon">🌍</span>
+                <span class="brand-name">Trip Scout</span>
+            </a>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Welcome back</h1>
+                <p>Sign in to continue your adventure</p>
+            </div>
+
+            <!-- Google Sign-In Button -->
+            <div class="google-btn-container">
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleSignIn"
+                     data-auto_prompt="false">
+                </div>
+
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left"
+                     data-width="100%">
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="login-divider">
+                <span>or continue with email</span>
+            </div>
+
+            <!-- Login Form -->
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-container">
+                        <span class="input-icon">✉️</span>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Enter your email"
+                            required 
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-container">
+                        <span class="input-icon">🔒</span>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Enter your password"
+                            required 
+                        />
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" name="remember" />
+                        <span class="checkmark"></span>
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-login">
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Sign Up Link -->
+            <div class="login-footer">
+                <p>Don't have an account? <a href="#" class="signup-link">Sign up</a></p>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <a href="index.html" class="back-home">
+            <span>←</span> Back to Home
+        </a>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script>
+        // Google Sign-In Callback
+        function handleGoogleSignIn(response) {
+            console.log('Google Sign-In response:', response);
+            // Decode the JWT token
+            const responsePayload = parseJwt(response.credential);
+            console.log('User:', responsePayload);
+            
+            // Store user info
+            localStorage.setItem('user', JSON.stringify(responsePayload));
+            
+            // Redirect to main page
+            window.location.href = 'index.html';
+        }
+
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        // Toggle Password Visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.toggle-password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // Form Submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple validation
+            if (email && password) {
+                // Mock login success
+                localStorage.setItem('user', JSON.stringify({
+                    email: email,
+                    name: email.split('@')[0]
+                }));
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Slideshow for Login Page
+        (function() {
+            const slides = document.querySelectorAll('.login-slideshow .slide');
+            let currentSlide = 0;
+            
+            function nextSlide() {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+            
+            // Change slide every 5 seconds
+            setInterval(nextSlide, 5000);
+        })();
+    </script>
+</body>
+</html>
+

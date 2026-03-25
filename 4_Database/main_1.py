@@ -6,20 +6,50 @@ import os
 load_dotenv()
 
 app = FastAPI()
+
 def get_db():
+    uri = os.getenv("DB_URI")
+    if not uri:
+        raise HTTPException(status_code=500, detail="DB_URI not configured")
     try:
-        print(os.getenv("DB_URI"),"Database connection successful")
-        return MongoClient(os.getenv("DB_URI"))
-        
+        client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+        client.admin.command("ping")
+        print(uri, "Database connection successful")
+        return client
     except Exception as e:
         print(f"Error connecting to the database: {e}")
         raise HTTPException(status_code=500, detail="Database connection error")
-MongoClient=get_db()
-db = MongoClient["Fastapidb"]
-@app.get("/items/{item_id}")
-def read_item(item_id: int):
-    item = db.items.find_one({"item_id": item_id})
-    if item:
-        return {"item_id": item["item_id"], "name": item["name"], "description": item["description"]}
-    else:
-        raise HTTPException(status_code=404, detail="Item not found")
+
+@app.on_event("startup")
+def startup():
+    app.mongodb_client = get_db()
+    app.db = app.mongodb_client["Fastapidb"]
+
+@app.on_event("shutdown")
+def shutdown():
+    if hasattr(app, "mongodb_client"):
+        app.mongodb_client.close()
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the FastAPI MongoDB example!"}
+@app.get("/todos")
+def read_todos():
+    try:
+        todos = list(app.db.todos.find())
+        # Convert ObjectId to string for JSON serialization
+        for todo in todos:
+            if "_id" in todo:
+                todo["_id"] = str(todo["_id"])
+        return {"data": todos,
+                "message": "Todos fetched successfully",
+                "status_code": "success"
+                }
+    except Exception as e:
+        print(f"Error fetching todos: {e}")
+        return {
+                "data": [],
+                "error": "Error fetching todos",
+                "details": str(e),
+                "message": "An error occurred while fetching todos from the database.",
+                "status_code": 500
+                }
