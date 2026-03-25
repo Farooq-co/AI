@@ -22,7 +22,7 @@ def get_db():
         yield db
     finally:
         db.close()
-class TodoResponse(BaseModel):
+class TodoResponse(TodoCreate):
     id: int
     title: str
     description: str = None
@@ -32,11 +32,14 @@ class TodoResponse(BaseModel):
         orm_mode = True
 @app.post("/todos/", response_model=TodoResponse)
 def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
-    db_todo = Todo(title=todo.title, description=todo.description, completed=todo.completed)
-    db.add(db_todo)
-    db.commit()
-    db.refresh(db_todo)
-    return db_todo
+    try:
+        db_todo = Todo(title=todo.title, description=todo.description, completed=todo.completed)
+        db.add(db_todo)
+        db.commit()
+        db.refresh(db_todo)
+        return db_todo
+    except Exception as e:
+        print(f"Error creating todo: {e}")
 @app.get("/todos/", response_model=List[TodoResponse])
 def read_todos(skip: int = 0, limit: int = 10, db   : Session = Depends(get_db)):
     todos = db.query(Todo).offset(skip).limit(limit).all()
