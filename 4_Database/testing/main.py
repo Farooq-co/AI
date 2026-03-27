@@ -47,8 +47,11 @@ def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
         print(f"Error creating todo: {e}")
 @app.get("/todos/", response_model=List[TodoResponse])
 def read_todos(skip: int = 0, limit: int = 10, db   : Session = Depends(get_db)):
-    todos = db.query(Todo).offset(skip).limit(limit).all()
-    return todos 
+    try:
+        todos = db.query(Todo).offset(skip).limit(limit).all()
+        return todos
+    except Exception as e:
+        print(f"Error reading todos: {e}")
 @app.get("/todos/{todo_id}", response_model=TodoResponse)
 def read_todo(todo_id: int, db: Session = Depends(get_db)):
     todo = db.query(Todo).filter(Todo.id == todo_id).first()
