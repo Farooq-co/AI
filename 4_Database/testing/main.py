@@ -33,7 +33,10 @@ class TodoResponse(TodoCreate):
 @app.post("/todos/", response_model=TodoResponse)
 def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     try:
-        db_todo = Todo(title=todo.title, description=todo.description, completed=todo.completed)
+        db_todo = Todo(
+            title=todo.title, 
+            description=todo.description, 
+            completed=todo.completed)
         db.add(db_todo)
         db.commit()
         db.refresh(db_todo)
