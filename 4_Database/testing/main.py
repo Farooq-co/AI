@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from config.database import SessionLocal, engine
@@ -27,7 +29,7 @@ class TodoResponse(TodoCreate):
     title: str
     description: str = None
     completed: bool
-    credit_at: str
+    created_at: datetime
     class Config:
         orm_mode = True
 @app.post("/todos/", response_model=TodoResponse)
