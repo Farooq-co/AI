@@ -54,10 +54,10 @@ def read_todos(skip: int = 0, limit: int = 10, db   : Session = Depends(get_db))
         print(f"Error reading todos: {e}")
 @app.get("/todos/{todo_id}", response_model=TodoResponse)
 def read_todo(todo_id: int, db: Session = Depends(get_db)):
-    todo = db.query(Todo).filter(Todo.id == todo_id).first()
-    if todo is None:
+    db_todo = db.query(Todo).filter(Todo.id == todo_id).first()
+    if db_todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    return todo
+    return db_todo
 @app.put("/todos/{todo_id}", response_model=TodoResponse)
 def update_todo(todo_id: int, todo: TodoUpdate, db: Session = Depends
 (get_db)):
