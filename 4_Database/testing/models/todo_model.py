@@ -3,13 +3,13 @@ from sqlalchemy.ext.declarative import declarative_base
 import datetime
 Base=declarative_base()
 
-class address(Base):
-    __tablename__='addresses'
-    id=Column(Integer,primary_key=True) 
-    zip_code=Column(String(50),nullable=False)
-    street=Column(String(100),nullable=False)
-    city=Column(String(255),nullable=False)
-    user_id=Column(Integer,ForeignKey('users.id'), onupdate="CASCADE", ondelete="CASCADE")
+# class address(Base):
+#     __tablename__='addresses'
+#     id=Column(Integer,primary_key=True) 
+#     zip_code=Column(String(50),nullable=False)
+#     street=Column(String(100),nullable=False)
+#     city=Column(String(255),nullable=False)
+#     user_id=Column(Integer,ForeignKey('users.id'), onupdate="CASCADE", ondelete="CASCADE")
 
 class user(Base):
     __tablename__='users'
