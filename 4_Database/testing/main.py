@@ -2,7 +2,7 @@ from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from config.database import SessionLocal, engine
-from models.todo_model import Base, Todo
+from models.todo_model import Base, Todo, User
 from pydantic import BaseModel
 from typing import List
 # create the database tables
@@ -34,10 +34,6 @@ class TodoResponse(TodoCreate):
 @app.post("/todos/", response_model=TodoResponse)
 def create_todo(todo: TodoCreate, db: Session = Depends(get_db)):
     try:
-        db_todo = Todo(
-            title=todo.title, 
-            description=todo.description, 
-            completed=todo.completed)
         db.add(db_todo)
         db.commit()
         db.refresh(db_todo)
@@ -80,3 +76,16 @@ def delete_todo(todo_id: int, db: Session = Depends(get_db)):
     db.delete(db_todo)
     db.commit()
     return {"detail": "Todo deleted"}
+@app.post("/users/", response_model=TodoResponse)
+def create_todo(User: TodoCreate, db: Session = Depends(get_db)):
+    try:
+        db_todo = Todo(
+            title=todo.title, 
+            description=todo.description, 
+            completed=todo.completed)
+        db.add(db_todo)
+        db.commit()
+        db.refresh(db_todo)
+        return db_todo
+    except Exception as e:
+        print(f"Error creating todo: {e}")
