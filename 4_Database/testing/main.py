@@ -19,6 +19,9 @@ class TodoCreate(BaseModel):
     title: str
     description: str = None
     completed: bool = False
+    user_id: int
+    email: str
+    password: str
 
 app = FastAPI()
 class TodoUpdate(BaseModel):
@@ -70,6 +73,17 @@ class Userupdate(BaseModel):
 # API endpoint to create a new todo item
 @app.post("/todos/{User_id}", response_model=TodoResponse)
 def create_todo(User_id: int, todo: TodoCreate, db: Session = Depends(get_db)):
+    try:
+        user=db.query(User).filter(User.id == User_id).first()
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        if user.email != todo.email:
+            raise HTTPException(status_code=400, detail="Email does not match user")
+        if password := hash_password(todo.password):
+            if not pwd_context.verify(password, user.password_hash):
+                raise HTTPException(status_code=400, detail="Invalid password")
+    except Exception as e:
+        print(f"Error creating todo: {e}")        
     db_todo = Todo(title=todo.title, description=todo.description, completed=todo.completed, user_id=User_id)
     db.add(db_todo)
     db.commit()
