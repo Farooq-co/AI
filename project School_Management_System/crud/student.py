@@ -15,7 +15,7 @@ def create_student(db: Session, student: StudentCreate):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    db_student = Student(user_id=db_user.id)
+    db_student = Student(user_id=db_user.id, name=student.name, email=student.email)
     db.add(db_student)
     db.commit()
     db.refresh(db_student)

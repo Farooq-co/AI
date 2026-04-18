@@ -15,7 +15,7 @@ def create_teacher(db: Session, teacher: TeacherCreate):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    db_teacher = Teacher(user_id=db_user.id)
+    db_teacher = Teacher(user_id=db_user.id, name=teacher.name, email=teacher.email)
     db.add(db_teacher)
     db.commit()
     db.refresh(db_teacher)

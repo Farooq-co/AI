@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 from . import Base
 
@@ -7,6 +7,8 @@ class Student(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
     # Additional fields can be added here, e.g., student_id, grade, etc.
 
     user = relationship("User", back_populates="student")
