@@ -1,4 +1,4 @@
 
 .env
 alembic.ini
-Database/alembic.ini
+project School_Management_System/Database/alembic.ini
