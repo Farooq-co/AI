@@ -1,17 +1,18 @@
 import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, Dropout, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+import matplotlib.pyplot as plt  # ADD THIS IMPORT AT TOP
 
+# Paths
+train_dir = "../data/train"
+test_dir = "../data/test"
 
-train_dir = "F:/data/train"
-test_dir  = "F:/data/test"
-
+# Image parameters
 IMG_SIZE = (150, 150)
 BATCH_SIZE = 22
 
-
+# Data generators
 train_datagen = ImageDataGenerator(
     rescale=1./255,
     rotation_range=20,
@@ -27,7 +28,7 @@ train_data = train_datagen.flow_from_directory(
     batch_size=BATCH_SIZE,
     class_mode='binary'
 )
-# Note: For testing, we typically don't apply data augmentation, only rescaling.
+
 test_data = test_datagen.flow_from_directory(
     test_dir,
     target_size=IMG_SIZE,
@@ -35,7 +36,7 @@ test_data = test_datagen.flow_from_directory(
     class_mode='binary'
 )
 
-# Build the CNN model
+# Model
 model = Sequential([
     Conv2D(32, (3,3), activation='relu', input_shape=(150,150,3)),
     MaxPooling2D(2,2),
@@ -47,32 +48,55 @@ model = Sequential([
     MaxPooling2D(2,2),
 
     Flatten(),
-    Dropout(0.5),
+
     Dense(128, activation='relu'),
-    Dense(1, activation='sigmoid')  # Binary classification
+    Dense(1, activation='sigmoid')
 ])
 
-# Compile the model
+# Compile
 model.compile(
     optimizer='adam',
     loss='binary_crossentropy',
     metrics=['accuracy']
 )
-# Early stopping to halt training when a monitored metric has stopped improving.
-early_stopping = EarlyStopping(monitor='val_loss', patience=3, verbose=1)
 
-# Save the model after every epoch if the validation loss improves.
-model_checkpoint = ModelCheckpoint('best_model.h5', monitor='val_loss', save_best_only=True, verbose=1)
-
-# Train the model
+# Train
 history = model.fit(
     train_data,
     epochs=10,
-    validation_data=test_data,
-    callbacks=[early_stopping, model_checkpoint]
+    validation_data=test_data
 )
-# save the model
-model.save('my_model.h5')
-# Evaluate the model on the test set
+
+# ========== ADD THIS SECTION ==========
+# Plot training history
+plt.figure(figsize=(12, 4))
+
+# Accuracy plot
+plt.subplot(1, 2, 1)
+plt.plot(history.history['accuracy'], label='Train Accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.title('Model Accuracy')
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+# Loss plot
+plt.subplot(1, 2, 2)
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Model Loss')
+plt.legend()
+plt.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('training_results.png', dpi=150)
+print("✅ Plot saved as 'training_results.png'")
+plt.show()
+# =====================================
+
+# Evaluate
 loss, acc = model.evaluate(test_data)
 print("Test Accuracy:", acc)

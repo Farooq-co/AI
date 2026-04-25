@@ -26,6 +26,8 @@ dependencies = [
     "pandas",
     "python-jose[cryptography]",
     "tensorflow==2.15.0",
+    "tensorflow-io-gcs-filesystem (==0.31.0)",
+    "pillow (>=12.2.0,<13.0.0)",
 ]
 
 [build-system]
