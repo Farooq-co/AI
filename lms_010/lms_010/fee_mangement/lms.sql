@@ -988,6 +988,244 @@ ALTER TABLE `students`
   ADD CONSTRAINT `fk_students_class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`),
   ADD CONSTRAINT `fk_students_guardian` FOREIGN KEY (`guardian_id`) REFERENCES `student_guardians` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_students_section` FOREIGN KEY (`section_id`) REFERENCES `sections` (`id`);
+-- --------------------------------------------------------
+
+--
+-- Fee management extension tables
+--
+
+CREATE TABLE `sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_sessions_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `payment_methods` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `method_name` varchar(100) NOT NULL,
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_payment_method_name` (`method_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_invoices` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `invoice_no` varchar(50) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `class_id` int(11) NOT NULL,
+  `session_id` int(11) NOT NULL,
+  `package_id` int(11) DEFAULT NULL,
+  `subtotal` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `discount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `scholarship` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `fine` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `total_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `due_date` date NOT NULL,
+  `status` enum('Pending','Paid','Partially Paid','Overdue','Cancelled') NOT NULL DEFAULT 'Pending',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` datetime DEFAULT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_invoice_no` (`invoice_no`),
+  KEY `idx_invoice_student` (`student_id`),
+  KEY `idx_invoice_status` (`status`),
+  KEY `idx_invoice_due_date` (`due_date`),
+  KEY `idx_invoice_class` (`class_id`),
+  KEY `idx_invoice_session` (`session_id`),
+  CONSTRAINT `fk_fee_invoices_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fee_invoices_class` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fee_invoices_session` FOREIGN KEY (`session_id`) REFERENCES `sessions` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `fk_fee_invoices_package` FOREIGN KEY (`package_id`) REFERENCES `fee_packages` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `invoice_items` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `invoice_id` int(11) NOT NULL,
+  `fee_head_id` int(11) DEFAULT NULL,
+  `fee_type_id` int(11) DEFAULT NULL,
+  `description` varchar(255) NOT NULL,
+  `amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_invoice_items_invoice` (`invoice_id`),
+  KEY `idx_invoice_items_head` (`fee_head_id`),
+  KEY `idx_invoice_items_type` (`fee_type_id`),
+  CONSTRAINT `fk_invoice_items_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `fee_invoices` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_invoice_items_head` FOREIGN KEY (`fee_head_id`) REFERENCES `fee_heads` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_invoice_items_type` FOREIGN KEY (`fee_type_id`) REFERENCES `fee_types` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `invoice_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `receipt_no` varchar(50) NOT NULL,
+  `amount_paid` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `payment_method_id` int(11) NOT NULL,
+  `transaction_id` varchar(100) DEFAULT NULL,
+  `bank_name` varchar(100) DEFAULT NULL,
+  `branch_name` varchar(100) DEFAULT NULL,
+  `cheque_number` varchar(100) DEFAULT NULL,
+  `reference_number` varchar(100) DEFAULT NULL,
+  `payment_date` date NOT NULL,
+  `remarks` text DEFAULT NULL,
+  `received_by` varchar(100) DEFAULT NULL,
+  `status` enum('Pending','Verified','Completed','Failed','Refunded') NOT NULL DEFAULT 'Pending',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_receipt_no` (`receipt_no`),
+  KEY `idx_payment_invoice` (`invoice_id`),
+  KEY `idx_payment_student` (`student_id`),
+  KEY `idx_payment_status` (`status`),
+  KEY `idx_payment_method` (`payment_method_id`),
+  CONSTRAINT `fk_fee_payments_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `fee_invoices` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fee_payments_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fee_payments_method` FOREIGN KEY (`payment_method_id`) REFERENCES `payment_methods` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `payment_details` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `payment_id` int(11) NOT NULL,
+  `detail_key` varchar(100) NOT NULL,
+  `detail_value` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_payment_details_payment` (`payment_id`),
+  CONSTRAINT `fk_payment_details_payment` FOREIGN KEY (`payment_id`) REFERENCES `fee_payments` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_discounts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `student_id` int(11) NOT NULL,
+  `type` enum('Sibling Discount','Employee Child','Merit Scholarship','Need Based','Special Concession') NOT NULL,
+  `percentage` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `fixed_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `reason` varchar(255) DEFAULT NULL,
+  `approved_by` varchar(100) DEFAULT NULL,
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_fee_discounts_student` (`student_id`),
+  CONSTRAINT `fk_fee_discounts_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_fines` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `invoice_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `fine_type` enum('Fixed Fine','Per Day Fine','Percentage Fine') NOT NULL,
+  `rate` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `days_overdue` int(11) NOT NULL DEFAULT 0,
+  `calculated_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `due_date` date NOT NULL,
+  `status` enum('Pending','Active','Resolved','Cancelled') NOT NULL DEFAULT 'Pending',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_fee_fines_invoice` (`invoice_id`),
+  KEY `idx_fee_fines_student` (`student_id`),
+  CONSTRAINT `fk_fee_fines_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `fee_invoices` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fee_fines_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_refunds` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `payment_id` int(11) NOT NULL,
+  `refund_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `refund_reason` varchar(255) DEFAULT NULL,
+  `approved_by` varchar(100) DEFAULT NULL,
+  `refund_date` date NOT NULL,
+  `status` enum('Pending','Approved','Rejected','Completed') NOT NULL DEFAULT 'Pending',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_fee_refunds_payment` (`payment_id`),
+  CONSTRAINT `fk_fee_refunds_payment` FOREIGN KEY (`payment_id`) REFERENCES `fee_payments` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_installments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `invoice_id` int(11) NOT NULL,
+  `installment_no` int(11) NOT NULL,
+  `due_date` date NOT NULL,
+  `amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `paid_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `remaining_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `status` enum('Pending','Paid','Overdue','Cancelled') NOT NULL DEFAULT 'Pending',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_fee_installments_invoice` (`invoice_id`),
+  CONSTRAINT `fk_fee_installments_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `fee_invoices` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_waivers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `student_id` int(11) NOT NULL,
+  `invoice_id` int(11) DEFAULT NULL,
+  `waiver_type` enum('Admission Fee','Exam Fee','Transport Fee','Library Fee','Fine','Tuition Fee') NOT NULL,
+  `waiver_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `waiver_reason` varchar(255) DEFAULT NULL,
+  `approved_by` varchar(100) DEFAULT NULL,
+  `status` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_fee_waivers_student` (`student_id`),
+  KEY `idx_fee_waivers_invoice` (`invoice_id`),
+  CONSTRAINT `fk_fee_waivers_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fee_waivers_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `fee_invoices` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE `fee_ledgers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `student_id` int(11) NOT NULL,
+  `opening_balance` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `fee_charges` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `discount_total` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `scholarship_total` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `fine_total` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `payments_total` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `refunds_total` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `closing_balance` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `last_updated` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_fee_ledgers_student` (`student_id`),
+  CONSTRAINT `fk_fee_ledgers_student` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `payment_methods` (`method_name`, `status`, `created_at`, `updated_at`) VALUES
+('Cash', 'Active', NOW(), NOW()),
+('Bank Transfer', 'Active', NOW(), NOW()),
+('Online Banking', 'Active', NOW(), NOW()),
+('JazzCash', 'Active', NOW(), NOW()),
+('Easypaisa', 'Active', NOW(), NOW()),
+('Raast', 'Active', NOW(), NOW()),
+('Debit Card', 'Active', NOW(), NOW()),
+('Credit Card', 'Active', NOW(), NOW()),
+('Cheque', 'Active', NOW(), NOW()),
+('Pay Order', 'Active', NOW(), NOW()),
+('Demand Draft', 'Active', NOW(), NOW()),
+('POS', 'Active', NOW(), NOW()),
+('QR Payment', 'Active', NOW(), NOW()),
+('Mobile Banking', 'Active', NOW(), NOW()),
+('1Bill', 'Active', NOW(), NOW()),
+('KuickPay', 'Active', NOW(), NOW()),
+('NIFT ePay', 'Active', NOW(), NOW());
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
