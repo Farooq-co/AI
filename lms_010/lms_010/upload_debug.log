@@ -1,0 +1,78 @@
+[2026-03-30 14:53:47] === Upload started ===
+[2026-03-30 14:53:47] POST data: Array
+(
+    [classes_id] => 1
+    [books_id] => 6
+)
+
+[2026-03-30 14:53:47] FILES data: Array
+(
+    [resource_file] => Array
+        (
+            [name] => resource_month3 (1).pdf
+            [full_path] => resource_month3 (1).pdf
+            [type] => application/pdf
+            [tmp_name] => C:\xampp\tmp\php987C.tmp
+            [error] => 0
+            [size] => 222368
+        )
+
+)
+
+[2026-03-30 14:53:47] Database connected successfully
+[2026-03-30 14:53:47] Processing resource file upload
+[2026-03-30 14:53:47] Classes ID: 1, Books ID: 6
+[2026-03-30 14:53:47] File size: 222368 bytes
+[2026-03-30 14:53:47] File name: resource_month3 (1).pdf, Extension: pdf
+[2026-03-30 14:53:48] Detected MIME type: application/pdf
+[2026-03-30 14:53:48] Existing record: Array
+(
+    [id] => 35
+    [planner_file] => 1774875094_Single_Term.pdf
+)
+
+[2026-03-30 14:53:48] Destination path: ../uploads/planner_files/1774875228_resource_month3__1_.pdf
+[2026-03-30 14:53:48] File moved successfully to: ../uploads/planner_files/1774875228_resource_month3__1_.pdf
+[2026-03-30 14:53:48] Updating existing record ID: 35
+[2026-03-30 14:53:48] Record updated successfully
+[2026-03-30 14:53:48] Old file deleted: ../uploads/planner_files/1774875094_Single_Term.pdf
+[2026-03-30 14:53:48] === Upload completed successfully ===
+[2026-03-30 14:55:14] === Upload started ===
+[2026-03-30 14:55:14] POST data: Array
+(
+    [classes_id] => 1
+    [books_id] => 6
+)
+
+[2026-03-30 14:55:14] FILES data: Array
+(
+    [resource_file] => Array
+        (
+            [name] => Single Term.pdf
+            [full_path] => Single Term.pdf
+            [type] => application/pdf
+            [tmp_name] => C:\xampp\tmp\phpEA23.tmp
+            [error] => 0
+            [size] => 263618
+        )
+
+)
+
+[2026-03-30 14:55:14] Database connected successfully
+[2026-03-30 14:55:14] Processing resource file upload
+[2026-03-30 14:55:14] Classes ID: 1, Books ID: 6
+[2026-03-30 14:55:14] File size: 263618 bytes
+[2026-03-30 14:55:14] File name: Single Term.pdf, Extension: pdf
+[2026-03-30 14:55:14] Detected MIME type: application/pdf
+[2026-03-30 14:55:14] Existing record: Array
+(
+    [id] => 35
+    [planner_file] => 1774875228_resource_month3__1_.pdf
+)
+
+[2026-03-30 14:55:14] Destination path: ../uploads/planner_files/1774875314_Single_Term.pdf
+[2026-03-30 14:55:14] File moved successfully to: ../uploads/planner_files/1774875314_Single_Term.pdf
+[2026-03-30 14:55:14] Updating existing record ID: 35
+[2026-03-30 14:55:14] Record updated successfully
+[2026-03-30 14:55:14] Old file deleted: ../uploads/planner_files/1774875228_resource_month3__1_.pdf
+[2026-03-30 14:55:14] === Upload completed successfully ===
