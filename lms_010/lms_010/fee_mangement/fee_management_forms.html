@@ -1,0 +1,748 @@
+<link rel="stylesheet" href="fee_management_forms.css" />
+
+<h2 class="sr-only">Fee management forms — tabbed interface covering all fee modules</h2>
+
+<div class="fee-forms-wrap">
+
+<header class="fee-page-header">
+  <h1 class="fee-page-title">Fee Management</h1>
+  <p class="fee-page-subtitle">Create and manage fee heads, invoices, payments, discounts, and student ledger records from a single dashboard.</p>
+</header>
+
+<div class="fee-tabs-wrap">
+<div class="tabs" id="tabs" role="tablist" aria-label="Fee management modules">
+  <button class="tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-head" data-tab="head"><i class="ti ti-tag" aria-hidden="true"></i> Fee head</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-type" data-tab="type"><i class="ti ti-category" aria-hidden="true"></i> Fee type</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-structure" data-tab="structure"><i class="ti ti-layout-grid" aria-hidden="true"></i> Fee structure</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-invoice" data-tab="invoice"><i class="ti ti-file-invoice" aria-hidden="true"></i> Invoice</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-payment" data-tab="payment"><i class="ti ti-credit-card" aria-hidden="true"></i> Payment</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-installment" data-tab="installment"><i class="ti ti-calendar-due" aria-hidden="true"></i> Installment</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-discount" data-tab="discount"><i class="ti ti-discount" aria-hidden="true"></i> Discount</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-fine" data-tab="fine"><i class="ti ti-alert-circle" aria-hidden="true"></i> Fine</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-waiver" data-tab="waiver"><i class="ti ti-shield-check" aria-hidden="true"></i> Waiver</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-refund" data-tab="refund"><i class="ti ti-refresh" aria-hidden="true"></i> Refund</button>
+  <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-ledger" data-tab="ledger"><i class="ti ti-book" aria-hidden="true"></i> Ledger</button>
+</div>
+</div>
+
+<!-- Fee Head -->
+<div class="panel active" id="panel-head" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Fee Head</h3>
+        <p class="panel-desc">Define fee categories such as tuition, transport, or lab fees.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_head/add_fee_head.php <span class="endpoint-tag">Table</span> fee_heads</p>
+      <form id="form-head" class="fee-form" data-endpoint="fee_head/add_fee_head.php">
+        <div class="form-grid">
+          <div class="field field-full">
+            <label for="head-name">Fee head name <span class="badge badge-req">required</span></label>
+            <input type="text" id="head-name" name="name" required placeholder="e.g. Tuition fee" maxlength="255" />
+          </div>
+          <div class="field">
+            <label for="head-status">Status</label>
+            <select id="head-status" name="status">
+              <option value="Active" selected>Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save fee head</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Fee Type -->
+<div class="panel" id="panel-type" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Fee Type</h3>
+        <p class="panel-desc">Set billing frequency — monthly, quarterly, annual, or one-time.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_type/add_fee_type.php <span class="endpoint-tag">Table</span> fee_types</p>
+      <form id="form-type" class="fee-form" data-endpoint="fee_type/add_fee_type.php">
+        <div class="form-grid">
+          <div class="field field-full">
+            <label for="type-name">Fee type name <span class="badge badge-req">required</span></label>
+            <input type="text" id="type-name" name="name" required placeholder="e.g. Monthly / Annual" maxlength="255" />
+          </div>
+          <div class="field">
+            <label for="type-status">Status</label>
+            <select id="type-status" name="status">
+              <option value="Active" selected>Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save fee type</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Fee Structure -->
+<div class="panel" id="panel-structure" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Fee Structure</h3>
+        <p class="panel-desc">Link fee heads and types to classes with defined amounts.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_structure/add_fee_structure.php <span class="endpoint-tag">Table</span> fee_structures</p>
+      <form id="form-structure" class="fee-form" data-endpoint="fee_structure/add_fee_structure.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="structure-fee-head">Fee head <span class="badge badge-req">required</span></label>
+            <select id="structure-fee-head" name="fee_head_id" required>
+              <option value="">-- Select fee head --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="structure-fee-type">Fee type <span class="badge badge-req">required</span></label>
+            <select id="structure-fee-type" name="fee_type_id" required>
+              <option value="">-- Select fee type --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="structure-class">Class <span class="badge badge-req">required</span></label>
+            <select id="structure-class" name="class_id" required>
+              <option value="">-- Select class --</option>
+            </select>
+          </div>
+          <div class="field field-highlight">
+            <label for="structure-amount">Amount (Rs) <span class="badge badge-req">required</span></label>
+            <input type="number" id="structure-amount" name="amount" min="0.01" step="0.01" required placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label for="structure-status">Status</label>
+            <select id="structure-status" name="status">
+              <option value="Active" selected>Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save structure</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice -->
+<div class="panel" id="panel-invoice" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Create Invoice</h3>
+        <p class="panel-desc">Generate a fee invoice for a student with optional adjustments.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_invoice/create_invoice.php <span class="endpoint-tag">Tables</span> fee_invoices, invoice_items</p>
+      <form id="form-invoice" class="fee-form" data-endpoint="fee_invoice/create_invoice.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="invoice-student">Student <span class="badge badge-req">required</span></label>
+            <select id="invoice-student" name="student_id" required>
+              <option value="">-- Select student --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="invoice-class">Class <span class="badge badge-req">required</span></label>
+            <select id="invoice-class" name="class_id" required>
+              <option value="">-- Select class --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="invoice-session">Session <span class="badge badge-req">required</span></label>
+            <select id="invoice-session" name="session_id" required>
+              <option value="">-- Select session --</option>
+            </select>
+          </div>
+          <div class="field field-highlight">
+            <label for="invoice-due-date">Due date <span class="badge badge-req">required</span></label>
+            <input type="date" id="invoice-due-date" name="due_date" required />
+          </div>
+          <div class="field">
+            <label for="invoice-package">Fee package <span class="hint">(optional)</span></label>
+            <select id="invoice-package" name="package_id">
+              <option value="">-- None --</option>
+            </select>
+          </div>
+          <div class="section-title">Adjustments</div>
+          <div class="field">
+            <label for="invoice-discount">Discount (Rs)</label>
+            <input type="number" id="invoice-discount" name="discount" min="0" step="0.01" value="0.00" />
+          </div>
+          <div class="field">
+            <label for="invoice-scholarship">Scholarship (Rs)</label>
+            <input type="number" id="invoice-scholarship" name="scholarship" min="0" step="0.01" value="0.00" />
+          </div>
+          <div class="field">
+            <label for="invoice-fine">Fine (Rs)</label>
+            <input type="number" id="invoice-fine" name="fine" min="0" step="0.01" value="0.00" />
+          </div>
+          <div class="field">
+            <label for="invoice-status">Status</label>
+            <select id="invoice-status" name="status">
+              <option value="Pending" selected>Pending</option>
+              <option value="Paid">Paid</option>
+              <option value="Partially Paid">Partially Paid</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <p class="info-box">Invoice number and line items are generated automatically from active fee structures for the selected class, plus the fee package amount when selected. Total = subtotal − discount − scholarship + fine.</p>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Create invoice</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Payment -->
+<div class="panel" id="panel-payment" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Record Payment</h3>
+        <p class="panel-desc">Log fee payments with method, bank details, and verification status.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_payment/add_payment.php <span class="endpoint-tag">Table</span> fee_payments</p>
+      <form id="form-payment" class="fee-form" data-endpoint="fee_payment/add_payment.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="payment-invoice">Invoice ID <span class="badge badge-req">required</span></label>
+            <input type="number" id="payment-invoice" name="invoice_id" min="1" required placeholder="Numeric invoice ID" />
+          </div>
+          <div class="field">
+            <label for="payment-student">Student ID <span class="badge badge-req">required</span></label>
+            <input type="number" id="payment-student" name="student_id" min="1" required placeholder="Numeric student ID" />
+          </div>
+          <div class="field field-highlight">
+            <label for="payment-amount">Amount paid (Rs) <span class="badge badge-req">required</span></label>
+            <input type="number" id="payment-amount" name="amount_paid" min="0.01" step="0.01" required placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label for="payment-method">Payment method <span class="badge badge-req">required</span></label>
+            <select id="payment-method" name="payment_method_id" required>
+              <option value="">-- Select method --</option>
+              <option value="1">Cash</option>
+              <option value="2">Bank Transfer</option>
+              <option value="3">Online Banking</option>
+              <option value="4">JazzCash</option>
+              <option value="5">Easypaisa</option>
+              <option value="6">Raast</option>
+              <option value="7">Debit Card</option>
+              <option value="8">Credit Card</option>
+              <option value="9">Cheque</option>
+              <option value="10">Pay Order</option>
+              <option value="11">Demand Draft</option>
+              <option value="12">POS</option>
+              <option value="13">QR Payment</option>
+              <option value="14">Mobile Banking</option>
+              <option value="15">1Bill</option>
+              <option value="16">KuickPay</option>
+              <option value="17">NIFT ePay</option>
+            </select>
+          </div>
+          <div class="field field-highlight">
+            <label for="payment-date">Payment date <span class="badge badge-req">required</span></label>
+            <input type="date" id="payment-date" name="payment_date" required />
+          </div>
+          <div class="section-title">Bank / cheque details</div>
+          <div class="field">
+            <label for="payment-transaction">Transaction ID</label>
+            <input type="text" id="payment-transaction" name="transaction_id" maxlength="100" placeholder="TXN123..." />
+          </div>
+          <div class="field">
+            <label for="payment-bank">Bank name</label>
+            <input type="text" id="payment-bank" name="bank_name" maxlength="100" />
+          </div>
+          <div class="field">
+            <label for="payment-branch">Branch name</label>
+            <input type="text" id="payment-branch" name="branch_name" maxlength="100" />
+          </div>
+          <div class="field">
+            <label for="payment-cheque">Cheque number</label>
+            <input type="text" id="payment-cheque" name="cheque_number" maxlength="100" />
+          </div>
+          <div class="field">
+            <label for="payment-reference">Reference number</label>
+            <input type="text" id="payment-reference" name="reference_number" maxlength="100" />
+          </div>
+          <div class="section-title">Other</div>
+          <div class="field">
+            <label for="payment-received">Received by</label>
+            <input type="text" id="payment-received" name="received_by" maxlength="100" placeholder="Staff name" />
+          </div>
+          <div class="field">
+            <label for="payment-status">Status</label>
+            <select id="payment-status" name="status">
+              <option value="Pending" selected>Pending</option>
+              <option value="Verified">Verified</option>
+              <option value="Completed">Completed</option>
+              <option value="Failed">Failed</option>
+              <option value="Refunded">Refunded</option>
+            </select>
+          </div>
+          <div class="field field-full">
+            <label for="payment-remarks">Remarks</label>
+            <textarea id="payment-remarks" name="remarks" placeholder="Any notes..."></textarea>
+          </div>
+          <p class="info-box">Receipt number is auto-generated (REC…) on save.</p>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save payment</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Installment -->
+<div class="panel" id="panel-installment" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Fee Installment</h3>
+        <p class="panel-desc">Split an invoice into scheduled installment payments.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_installment/add_installment.php <span class="endpoint-tag">Table</span> fee_installments</p>
+      <form id="form-installment" class="fee-form" data-endpoint="fee_installment/add_installment.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="installment-invoice">Invoice ID <span class="badge badge-req">required</span></label>
+            <input type="number" id="installment-invoice" name="invoice_id" min="1" required placeholder="Numeric invoice ID" />
+          </div>
+          <div class="field">
+            <label for="installment-no">Installment no. <span class="badge badge-req">required</span></label>
+            <input type="number" id="installment-no" name="installment_no" min="1" required placeholder="e.g. 1, 2, 3" />
+          </div>
+          <div class="field field-highlight">
+            <label for="installment-due">Due date <span class="badge badge-req">required</span></label>
+            <input type="date" id="installment-due" name="due_date" required />
+          </div>
+          <div class="field field-highlight">
+            <label for="installment-amount">Amount (Rs) <span class="badge badge-req">required</span></label>
+            <input type="number" id="installment-amount" name="amount" min="0.01" step="0.01" required placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label for="installment-paid">Paid amount (Rs)</label>
+            <input type="number" id="installment-paid" name="paid_amount" min="0" step="0.01" value="0.00" placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label for="installment-remaining">Remaining amount (Rs) <span class="hint">(auto)</span></label>
+            <input type="number" id="installment-remaining" readonly step="0.01" value="0.00" aria-readonly="true" />
+          </div>
+          <div class="field">
+            <label for="installment-status">Status</label>
+            <select id="installment-status" name="status">
+              <option value="Pending" selected>Pending</option>
+              <option value="Paid">Paid</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save installment</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Discount -->
+<div class="panel" id="panel-discount" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Student Discount</h3>
+        <p class="panel-desc">Apply percentage or fixed discounts for eligible students.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_discount/add_discount.php <span class="endpoint-tag">Table</span> fee_discounts</p>
+      <form id="form-discount" class="fee-form" data-endpoint="fee_discount/add_discount.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="discount-student">Student <span class="badge badge-req">required</span></label>
+            <select id="discount-student" name="student_id" required>
+              <option value="">-- Select student --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="discount-type">Discount type <span class="badge badge-req">required</span></label>
+            <select id="discount-type" name="type" required>
+              <option value="">-- Select type --</option>
+              <option value="Sibling Discount">Sibling Discount</option>
+              <option value="Employee Child">Employee Child</option>
+              <option value="Merit Scholarship">Merit Scholarship</option>
+              <option value="Need Based">Need Based</option>
+              <option value="Special Concession">Special Concession</option>
+            </select>
+          </div>
+          <div class="field field-highlight">
+            <label for="discount-percent">Percentage (%)</label>
+            <input type="number" id="discount-percent" name="percentage" min="0" max="100" step="0.01" value="0.00" placeholder="0.00" />
+          </div>
+          <div class="field field-highlight">
+            <label for="discount-fixed">Fixed amount (Rs)</label>
+            <input type="number" id="discount-fixed" name="fixed_amount" min="0" step="0.01" value="0.00" placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label for="discount-approved">Approved by</label>
+            <input type="text" id="discount-approved" name="approved_by" maxlength="100" placeholder="Staff name" />
+          </div>
+          <div class="field">
+            <label for="discount-status">Status</label>
+            <select id="discount-status" name="status">
+              <option value="Active" selected>Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="field field-full">
+            <label for="discount-reason">Reason</label>
+            <textarea id="discount-reason" name="reason" maxlength="255" placeholder="Reason for discount..."></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save discount</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Fine -->
+<div class="panel" id="panel-fine" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Late Fine</h3>
+        <p class="panel-desc">Calculate and apply fines for overdue fee payments.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_fine/save_fine.php <span class="endpoint-tag">Table</span> fee_fines</p>
+      <form id="form-fine" class="fee-form" data-endpoint="fee_fine/save_fine.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="fine-student">Student <span class="badge badge-req">required</span></label>
+            <select id="fine-student" name="student_id" required>
+              <option value="">-- Select student --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fine-invoice">Invoice ID <span class="hint">(optional; required for percentage fine)</span></label>
+            <input type="number" id="fine-invoice" name="invoice_id" min="1" placeholder="Numeric invoice ID" />
+          </div>
+          <div class="field">
+            <label for="fine-type">Fine type</label>
+            <select id="fine-type" name="fine_type">
+              <option value="Fixed Fine" selected>Fixed Fine</option>
+              <option value="Per Day Fine">Per Day Fine</option>
+              <option value="Percentage Fine">Percentage Fine</option>
+            </select>
+          </div>
+          <div class="field field-highlight">
+            <label for="fine-rate">Rate <span class="badge badge-req">required</span></label>
+            <input type="number" id="fine-rate" name="rate" min="0" step="0.01" required placeholder="Amount or %" />
+          </div>
+          <div class="field">
+            <label for="fine-days">Days overdue</label>
+            <input type="number" id="fine-days" name="days_overdue" min="0" value="0" placeholder="0" />
+          </div>
+          <div class="field field-highlight">
+            <label for="fine-due">Due date <span class="badge badge-req">required</span></label>
+            <input type="date" id="fine-due" name="due_date" required />
+          </div>
+          <div class="field field-highlight">
+            <label for="fine-calculated">Calculated amount (Rs) <span class="hint">(auto)</span></label>
+            <input type="number" id="fine-calculated" readonly step="0.01" value="0.00" aria-readonly="true" />
+          </div>
+          <p class="info-box">Fixed Fine = rate. Per Day Fine = rate × days overdue. Percentage Fine = rate% of invoice total (requires invoice ID).</p>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save fine</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Waiver -->
+<div class="panel" id="panel-waiver" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Fee Waiver</h3>
+        <p class="panel-desc">Waive specific fee components for approved students.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_waiver/add_waiver.php <span class="endpoint-tag">Table</span> fee_waivers</p>
+      <form id="form-waiver" class="fee-form" data-endpoint="fee_waiver/add_waiver.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="waiver-student">Student <span class="badge badge-req">required</span></label>
+            <select id="waiver-student" name="student_id" required>
+              <option value="">-- Select student --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="waiver-invoice">Invoice ID <span class="hint">(optional)</span></label>
+            <input type="number" id="waiver-invoice" name="invoice_id" min="1" placeholder="Numeric invoice ID" />
+          </div>
+          <div class="field">
+            <label for="waiver-type">Waiver type <span class="badge badge-req">required</span></label>
+            <select id="waiver-type" name="waiver_type" required>
+              <option value="">-- Select type --</option>
+              <option value="Admission Fee">Admission Fee</option>
+              <option value="Exam Fee">Exam Fee</option>
+              <option value="Transport Fee">Transport Fee</option>
+              <option value="Library Fee">Library Fee</option>
+              <option value="Fine">Fine</option>
+              <option value="Tuition Fee">Tuition Fee</option>
+            </select>
+          </div>
+          <div class="field field-highlight">
+            <label for="waiver-amount">Waiver amount (Rs) <span class="badge badge-req">required</span></label>
+            <input type="number" id="waiver-amount" name="waiver_amount" min="0.01" step="0.01" required placeholder="0.00" />
+          </div>
+          <div class="field">
+            <label for="waiver-approved">Approved by</label>
+            <input type="text" id="waiver-approved" name="approved_by" maxlength="100" placeholder="Staff name" />
+          </div>
+          <div class="field">
+            <label for="waiver-status">Status</label>
+            <select id="waiver-status" name="status">
+              <option value="Active" selected>Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="field field-full">
+            <label for="waiver-reason">Reason</label>
+            <textarea id="waiver-reason" name="waiver_reason" maxlength="255" placeholder="Reason for waiver..."></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save waiver</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Refund -->
+<div class="panel" id="panel-refund" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Payment Refund</h3>
+        <p class="panel-desc">Process refunds against verified fee payments.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">POST</span> fee_refund/add_refund.php <span class="endpoint-tag">Table</span> fee_refunds</p>
+      <form id="form-refund" class="fee-form" data-endpoint="fee_refund/add_refund.php">
+        <div class="form-grid form-grid-3">
+          <div class="field">
+            <label for="refund-payment">Payment ID <span class="badge badge-req">required</span></label>
+            <input type="number" id="refund-payment" name="payment_id" min="1" required placeholder="Numeric payment ID" />
+          </div>
+          <div class="field field-highlight">
+            <label for="refund-amount">Refund amount (Rs) <span class="badge badge-req">required</span></label>
+            <input type="number" id="refund-amount" name="refund_amount" min="0.01" step="0.01" required placeholder="0.00" />
+          </div>
+          <div class="field field-highlight">
+            <label for="refund-date">Refund date <span class="badge badge-req">required</span></label>
+            <input type="date" id="refund-date" name="refund_date" required />
+          </div>
+          <div class="field">
+            <label for="refund-approved">Approved by</label>
+            <input type="text" id="refund-approved" name="approved_by" maxlength="100" placeholder="Staff name" />
+          </div>
+          <div class="field">
+            <label for="refund-status">Status</label>
+            <select id="refund-status" name="status">
+              <option value="Pending" selected>Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="field field-full">
+            <label for="refund-reason">Refund reason</label>
+            <textarea id="refund-reason" name="refund_reason" maxlength="255" placeholder="Reason for refund..."></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Save refund</button>
+          <button type="reset" class="btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Ledger (read-only view) -->
+<div class="panel" id="panel-ledger" role="tabpanel">
+  <div class="panel-card">
+    <div class="panel-head">
+      <div>
+        <h3 class="panel-title">Student Ledger</h3>
+        <p class="panel-desc">View read-only balance summary for a selected student.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <p class="endpoint"><span class="endpoint-tag">GET</span> fee_ledger/view_ledger.php?id=… <span class="endpoint-tag">Table</span> fee_ledgers</p>
+      <form id="form-ledger" class="fee-form">
+        <div class="form-grid">
+          <div class="field field-full">
+            <label for="ledger-student">Student</label>
+            <select id="ledger-student" name="student_id">
+              <option value="">-- Select student to view ledger --</option>
+            </select>
+          </div>
+          <div class="section-title">Balance summary</div>
+          <div class="ledger-summary">
+            <div class="field">
+              <label for="ledger-opening">Opening balance (Rs)</label>
+              <input type="text" id="ledger-opening" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field">
+              <label for="ledger-charges">Fee charges (Rs)</label>
+              <input type="text" id="ledger-charges" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field">
+              <label for="ledger-discount">Discount total (Rs)</label>
+              <input type="text" id="ledger-discount" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field">
+              <label for="ledger-scholarship">Scholarship total (Rs)</label>
+              <input type="text" id="ledger-scholarship" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field">
+              <label for="ledger-fine">Fine total (Rs)</label>
+              <input type="text" id="ledger-fine" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field">
+              <label for="ledger-payments">Payments total (Rs)</label>
+              <input type="text" id="ledger-payments" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field">
+              <label for="ledger-refunds">Refunds total (Rs)</label>
+              <input type="text" id="ledger-refunds" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field field-highlight">
+              <label for="ledger-closing">Closing balance (Rs)</label>
+              <input type="text" id="ledger-closing" readonly value="—" aria-readonly="true" />
+            </div>
+            <div class="field">
+              <label for="ledger-updated">Last updated</label>
+              <input type="text" id="ledger-updated" readonly value="—" aria-readonly="true" />
+            </div>
+          </div>
+          <p class="info-box">Ledger is a read-only student balance summary. Use fee_ledger/list_ledger.php to browse records, then view_ledger.php for details.</p>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn-primary" id="ledger-view-btn">View ledger</button>
+          <button type="reset" class="btn-secondary">Clear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const tabs=document.getElementById('tabs');
+  tabs.addEventListener('click',e=>{
+    const btn=e.target.closest('.tab');
+    if(!btn)return;
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.classList.remove('active');
+      t.setAttribute('aria-selected','false');
+    });
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected','true');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+
+  function updateInstallmentRemaining(){
+    const amount=parseFloat(document.getElementById('installment-amount').value)||0;
+    const paid=parseFloat(document.getElementById('installment-paid').value)||0;
+    document.getElementById('installment-remaining').value=Math.max(0,amount-paid).toFixed(2);
+  }
+  document.getElementById('installment-amount').addEventListener('input',updateInstallmentRemaining);
+  document.getElementById('installment-paid').addEventListener('input',updateInstallmentRemaining);
+
+  function updateFineCalculated(){
+    const type=document.getElementById('fine-type').value;
+    const rate=parseFloat(document.getElementById('fine-rate').value)||0;
+    const days=parseInt(document.getElementById('fine-days').value,10)||0;
+    let calc=0;
+    if(type==='Fixed Fine')calc=rate;
+    else if(type==='Per Day Fine')calc=rate*days;
+    else calc=0;
+    document.getElementById('fine-calculated').value=calc.toFixed(2);
+  }
+  ['fine-type','fine-rate','fine-days'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',updateFineCalculated);
+    document.getElementById(id).addEventListener('change',updateFineCalculated);
+  });
+
+  document.querySelectorAll('.fee-form').forEach(form=>{
+    form.addEventListener('submit',e=>{
+      e.preventDefault();
+      const endpoint=form.dataset.endpoint;
+      if(!endpoint)return;
+      const fd=new FormData(form);
+      fetch(endpoint,{method:'POST',body:fd})
+        .then(r=>r.json())
+        .then(data=>alert(data.message||(data.success?'Saved':'Failed')))
+        .catch(()=>alert('Request failed. Ensure this page is served from the fee_mangement directory.'));
+    });
+  });
+
+  document.getElementById('ledger-view-btn').addEventListener('click',()=>{
+    const id=document.getElementById('ledger-student').value;
+    if(!id){alert('Select a student first.');return;}
+    window.open('fee_ledger/view_ledger.php?id='+encodeURIComponent(id),'_blank');
+  });
+})();
+</script>
